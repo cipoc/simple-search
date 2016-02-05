@@ -55,5 +55,11 @@
          (map add-score
               (repeatedly max-tries #(random-answer instance)))))
 
-(time (random-search knapPI_16_20_1000_1 1000000
+(defn tweak
+  [instance]
+  (let [choices-vec ((random-search knapPI_16_20_1000_1 10000) :choices)]
+        [len-choices (count ((random-search knapPI_16_20_1000_1 10000) :choices))]
+  )
+
+(time (random-search knapPI_16_20_1000_1 10000
 ))
