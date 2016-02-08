@@ -55,16 +55,32 @@
          (map add-score
               (repeatedly max-tries #(random-answer instance)))))
 
+
+(time (random-search knapPI_16_20_1000_1 10000
+))
+
+
+
+;==========================================Our Work Starts Here!==============================
+
+
+
+;;;Tweak Strategy------------------
 (defn tweak
   [instance]
   (let [choices-vec ((random-search knapPI_16_20_1000_1 10000) :choices)]
         [len-choices (count ((random-search knapPI_16_20_1000_1 10000) :choices))]
   )
+  (loop [start 0
+         end len-choices]
+    (if (= (nth choices-vec start)
+           (replace choices-vec)
 
-(time (random-search knapPI_16_20_1000_1 10000
-))
+   )
 
-;;;Tweak Strategy #1
+
+
+
 (defn run-mutator
   "Take a instance, mutator, and number of iterations. Then do hill climbing from that instance."
   [instance mutator max-tries]
@@ -84,11 +100,39 @@
 (defn swap-random-item
   "Given an instance, we intend to flip a random bit off and a random bit on."
   [instance]
-  (( (count (:choices instance))
+  (
+
+(let [size-instance (count (:choices instance))])
+
+  )
+
+  (loop [start 0 inst instance]
+    (if (= start size-instance)
+      inst
+      (recur
+       (+ start 1)
+       (let [new-inst (mutator inst)]
+         (if ( > (score new-inst) (score inst))
+           new-inst
+           inst)))))
+
 )
 
-(let [rand (random-search knapPI_16_20_1000_1 10000)]
-[rand,
- "                                                 After we climed the hill, we got:"
-(run-mutator rand swap-random-item 1000)]
-)
+;[rand,
+;; "After we climed the hill, we got:"
+;;;(run-mutator rand swap-random-item 1000)]
+;)
+;))
+
+
+(loop [i 0]
+  (when (< i 5)
+    (println i)
+    (recur (inc i)); loop i will take this value
+))
+
+;;;Simple Hill-Climbing------------------------
+
+
+
+;;;Hill-Climbing With Random Restarts-------------
