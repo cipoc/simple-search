@@ -63,3 +63,32 @@
 
 (time (random-search knapPI_16_20_1000_1 10000
 ))
+
+;;;Tweak Strategy #1
+(defn run-mutator
+  "Take a instance, mutator, and number of iterations. Then do hill climbing from that instance."
+  [instance mutator max-tries]
+  (loop [start 0 inst instance]
+    (if (= start max-tries)
+      inst
+      (recur
+       (+ start 1)
+       (let [new-inst (mutator inst)]
+         (if ( > (score new-inst) (score inst))
+           new-inst
+           inst)))))
+)
+
+
+
+(defn swap-random-item
+  "Given an instance, we intend to flip a random bit off and a random bit on."
+  [instance]
+  (( (count (:choices instance))
+)
+
+(let [rand (random-search knapPI_16_20_1000_1 10000)]
+[rand,
+ "                                                 After we climed the hill, we got:"
+(run-mutator rand swap-random-item 1000)]
+)
