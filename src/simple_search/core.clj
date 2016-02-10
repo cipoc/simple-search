@@ -57,8 +57,8 @@
               (repeatedly max-tries #(random-answer instance)))))
 
 
-(random-search knapPI_16_20_1000_1 100000
-)
+;(random-search knapPI_16_20_1000_1 100000
+;)
 
 
 
@@ -71,34 +71,35 @@
 
 ;(tweak knapPI_16_20_1000_1)
 
- (defn rando-answer
- )
+; (defn rando-answer
+; )
 
-  (defn tweak
-  [instance]
-  (let [choices-vec ((random-answer instance 100000) :choices)
-        len-choices (count choices-vec)]
-   (loop [start 0]
-   (if (= (nth choices-vec start) 1) (assoc choices-vec start 0) (recur (inc start)))
-    )
-   ))
+;  (defn tweak-origional
+;  [instance]
+;  (let [choices-vec ((random-answer instance 100000) :choices)
+;        len-choices (count choices-vec)]
+ ;  (loop [start 0]
+;   (if (= (nth choices-vec start) 1) (assoc choices-vec start 0) (recur (inc start)))
+;    )
+ ;  ))
 
-(random-search (random-answer knapPI_11_20_1000_1) 19)
+;(random-search (random-answer knapPI_11_20_1000_1) 19)
 
-(let [instance (random-search knapPI_16_20_1000_1 10000)
-      tweaked-choices (tweak instance)]
-  [instance tweaked-choices])
+;(let [instance (random-search knapPI_16_20_1000_1 10000)
+ ;     tweaked-choices (tweak instance)]
+ ; [instance tweaked-choices])
 
 ;;;Tweak Strategy 2------------------------------------
-(defn tweak
+
+(defn tweak-two
   "Consumes an answer and a numeric index, returns a new answer created by
    flipping the bit at index in the choices vector. Adjusts total-weight and total-value accordingly."
   [answer index]
   (let [item-list (nth (:items (:instance answer)) index)
         choices-vec (:choices answer)
         tweak-index (- 1 (nth choices-vec index))
-        tweak-choices-vec (concat (take index choices-vec) (list new-index) (drop (inc index) choices-vec))
-        op (if (= 0 new-bit) - +)
+        tweak-choices-vec (concat (take index choices-vec) (list tweak-index) (drop (inc index) choices-vec))
+        op (if (= 0 tweak-index) - +)
         tweak-weight (op (:total-weight answer) (:weight item-list))
         tweak-value   (op (:total-value answer) (:value item-list))]
   {:instance (:instance answer)
@@ -122,11 +123,11 @@
   [answer]
     (cond
       (< (:capacity (:instance answer)) (:total-weight answer)) ;; take something out
-         (tweak answer (rand-nth (find-1s (:choices answer))))
-         
+         (tweak-two answer (rand-nth (find-1s (:choices answer))))
+
       (> (:capacity (:instance answer)) (:total-weight answer)) ;; put something in
-         (tweak answer (rand-nth (find-0s (:choices answer))))
-         
+         (tweak-two answer (rand-nth (find-0s (:choices answer))))
+
       :else answer))
 
 
@@ -136,10 +137,12 @@
 (defn hill-climb
   "Hill-climber on random-search to find a solution."
   [min-tries tweak-meth instance]
-    (loop [curr-best (rand-answer instance)
+    (loop [curr-best (random-answer instance)
            i min-tries]
       (if (and (<= i 0) (> (score curr-best) 0)) curr-best
         (recur (max-key score curr-best (tweak-meth curr-best)) (dec i)))))
+
+;(hill-climb 10000 tweak-two knapPI_11_20_1000_1)
 
 ;;;Hill-Climbing With Random Restarts-------------
 (defn random-restart
