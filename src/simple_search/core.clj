@@ -142,7 +142,13 @@
       (if (and (<= i 0) (> (score curr-best) 0)) curr-best
         (recur (max-key score curr-best (tweak-meth curr-best)) (dec i)))))
 
-;(hill-climb 10000 tweak-two knapPI_11_20_1000_1)
+(hill-climb 10 find-op-answer knapPI_11_20_1000_1)
+(hill-climb 20 find-op-answer knapPI_11_20_1000_1)
+(hill-climb 30 find-op-answer knapPI_11_20_1000_1)
+(hill-climb 40 find-op-answer knapPI_11_20_1000_1)
+(hill-climb 50 find-op-answer knapPI_11_20_1000_1)
+(hill-climb 60 find-op-answer knapPI_11_20_1000_1)
+(hill-climb 70 find-op-answer knapPI_11_20_1000_1)
 
 ;;;Hill-Climbing With Random Restarts-------------
 (defn random-restart
