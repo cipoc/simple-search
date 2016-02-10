@@ -67,9 +67,7 @@
 
 
 
-;;;Tweak Strategy------------------
-
-
+;;;Tweak Strategy 1------------------
 
 ;(tweak knapPI_16_20_1000_1)
 
@@ -91,56 +89,61 @@
       tweaked-choices (tweak instance)]
   [instance tweaked-choices])
 
+;;;Tweak Strategy 2------------------------------------
+(defn tweak
+  "Consumes an answer and a numeric index, returns a new answer created by
+   flipping the bit at index in the choices vector. Adjusts total-weight and total-value accordingly."
+  [answer index]
+  (let [item-list (nth (:items (:instance answer)) index)
+        choices-vec (:choices answer)
+        tweak-index (- 1 (nth choices-vec index))
+        tweak-choices-vec (concat (take index choices-vec) (list new-index) (drop (inc index) choices-vec))
+        op (if (= 0 new-bit) - +)
+        tweak-weight (op (:total-weight answer) (:weight item-list))
+        tweak-value   (op (:total-value answer) (:value item-list))]
+  {:instance (:instance answer)
+   :choices tweak-choices-vec
+   :total-weight tweak-weight
+   :total-value tweak-value}))
 
+(defn find-0s
+  "Consumes a choices vector, and returns vector of all indices of 0's."
+  [choices]
+  (map second (filter #(= 0 (first %)) (map vector choices (range (count choices))))))
 
+(defn find-1s
+  "Consumes a choices vector, and returns vector of all indices of 1's."
+  [choices]
+  (map second (filter #(= 1 (first %)) (map vector choices (range (count choices))))))
 
+(defn find-op-answer
+  "Compares weight of answer w/ capacity and if weight > capacity, tweaks & deletes an item from
+   the knapsack. If weight < capacity, then tweaks & adds an item to the knapsack. O/w, returns only answer."
+  [answer]
+    (cond
+      (< (:capacity (:instance answer)) (:total-weight answer)) ;; take something out
+         (tweak answer (rand-nth (find-1s (:choices answer))))
+         
+      (> (:capacity (:instance answer)) (:total-weight answer)) ;; put something in
+         (tweak answer (rand-nth (find-0s (:choices answer))))
+         
+      :else answer))
 
-;(defn run-mutator
-;  "Take a instance, mutator, and number of iterations. Then do hill climbing from that instance."
-;  [instance mutator max-tries]
-;  (loop [start 0 inst instance]
-;    (if (= start max-tries)
-;      inst
-;      (recur
-;       (+ start 1)
- ;      (let [new-inst (mutator inst)]
-;         (if ( > (score new-inst) (score inst))
-;           new-inst
-;           inst)))))
-;)
-
-
-
-;(defn swap-random-item
-;  "Given an instance, we intend to flip a random bit off and a random bit on."
-;  [instance]
-;  (
-
-;(let [size-instance (count (:choices instance))])
-
-;  )
-
-;  (loop [start 0 inst instance]
-;    (if (= start size-instance)
-;      inst
-;      (recur
-;       (+ start 1)
-;       (let [new-inst (mutator inst)]
-;         (if ( > (score new-inst) (score inst))
-;           new-inst
-;          inst)))))
-
-;)
-
-;[rand,
-;; "After we climed the hill, we got:"
-;;;(run-mutator rand swap-random-item 1000)]
-;)
-;))
 
 
 ;;;Simple Hill-Climbing------------------------
 
-
+(defn hill-climb
+  "Hill-climber on random-search to find a solution."
+  [min-tries tweak-meth instance]
+    (loop [curr-best (rand-answer instance)
+           i min-tries]
+      (if (and (<= i 0) (> (score curr-best) 0)) curr-best
+        (recur (max-key score curr-best (tweak-meth curr-best)) (dec i)))))
 
 ;;;Hill-Climbing With Random Restarts-------------
+(defn random-restart
+  "Consumes # tweaks (dep), # restarts (bread), method to tweak with and instance to find optimal solution."
+  [dep bread tweak-meth instance]
+  (let [hill-climber #(hill-climb dep tweak-meth instance)]
+    (reduce (partial max-key score) (for [i (range bread)] (hill-climb)))))
