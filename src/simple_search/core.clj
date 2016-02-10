@@ -125,10 +125,8 @@
       (< (:capacity (:instance answer)) (:total-weight answer)) ;; take something out
          (tweak-two answer (rand-nth (find-1s (:choices answer))))
 
-      (> (:capacity (:instance answer)) (:total-weight answer)) ;; put something in
-         (tweak-two answer (rand-nth (find-0s (:choices answer))))
-
-      :else answer))
+      (>= (:capacity (:instance answer)) (:total-weight answer)) ;; put something in
+         (tweak-two answer (rand-nth (find-0s (:choices answer))))))
 
 
 
